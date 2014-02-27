@@ -1,7 +1,7 @@
 //Utils for QR codes (Encoding)
 //TODO: Testing; comments
 
-package uk.co.auroraweb.nat5.utils;
+package uk.co.auroraweb.nat5.util;
 
 import java.awt.Image;
 import java.io.IOException;
