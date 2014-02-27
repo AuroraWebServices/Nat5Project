@@ -65,7 +65,7 @@ public class TableUtils {
 			formattedData[i][3] = data.get(i).getAddress();
 			formattedData[i][4] = Utils.formatDate(data.get(i).getDOB(), "dd/MM/yy");
 			formattedData[i][5] = data.get(i).getEmail();
-			formattedData[i][6] = Integer.toString(EventUtils.getEventsAttended(data.get(i).getAttendedEvents()));
+			formattedData[i][6] = Integer.toString(EntryUtils.getEventsAttended(data.get(i).getAttendedEvents()));
 			
 		}
 		
