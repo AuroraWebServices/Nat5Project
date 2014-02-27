@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -23,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
 import net.miginfocom.swing.MigLayout;
 import uk.co.auroraweb.nat5.Entry;
 import uk.co.auroraweb.nat5.util.CSVParser;
+import uk.co.auroraweb.nat5.util.FileUtils;
 import uk.co.auroraweb.nat5.util.TableUtils;
 
 public class GuiMain extends JFrame implements ActionListener {
@@ -103,6 +105,7 @@ public class GuiMain extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		pack();
 		setLocation(300, 300);
+		setSize(900, 500);
 		setVisible(true);
 	}
 
@@ -110,34 +113,31 @@ public class GuiMain extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		if (e.getSource() == btnImport) {
-			//Sets the progress bars value to 0; A trivial feature, as the program parses it faster than can be noticeable incremented
+			//Sets the progress bars value to 0
 			pb.setValue(0);
 			
 			fc.showOpenDialog(this);
 			
-			pb.setValue(20); //20
-			
 			String file = fc.getSelectedFile().getPath();
 			
-			pb.setValue(40); //40
-			
-			List<Entry> data = CSVParser.parseCSV(file);
-			
-			pb.setValue(60); //60
-			
-			DefaultTableModel model = TableUtils.updatedTable(data);
-			
-			tblFans.setModel(model);
-			
-			pb.setValue(80);//80
-			
-			model.fireTableDataChanged();
-			pb.setValue(100); //100
-			
-			txtFile.setText(file);
+			if (FileUtils.verifyFileFormat(file, "csv")) {
+				
+				List<Entry> data = CSVParser.parseCSV(file);
+				
+				DefaultTableModel model = TableUtils.updatedTable(data);
+				tblFans.setModel(model);
+				model.fireTableDataChanged();
+				
+				pb.setValue(100); //100
+				
+				txtFile.setText(file);
+			} else {
+				JOptionPane.showMessageDialog(null, "Error: File could not be read.", "National 5 - Music Fans", JOptionPane.ERROR_MESSAGE);
+			}
 
 		} else if (e.getSource() == btnExport) {
 			//TODO: export functionality
+			System.out.print(getSize());
 		} else if (e.getSource() == btnExit) {
 			//Close the program
 			super.dispose();
