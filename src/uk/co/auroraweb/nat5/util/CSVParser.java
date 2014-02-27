@@ -1,4 +1,4 @@
-//Used to parse the CSV file
+//Used to parse CSV files
 
 package uk.co.auroraweb.nat5.util;
 
@@ -16,12 +16,20 @@ public class CSVParser {
 
 	private static Scanner sc;
 
+	
+	/**
+	 * Returns an ArrayList featuring all entries of the CSV.
+	 * The file argument must in existence or a FileNotFoundException
+	 * error will occur.
+	 * 
+	 * @param 	file	The input file to be read
+	 * @return			An ArrayList containing all the entries of the CSV.
+	 */
 	public static List<Entry> parseCSV(String file){
 		
 		List<Entry> out = new ArrayList<Entry>();
 	
 		String delimiter = ",";
-		Scanner sc = null;
 		
 		try {
 			sc = new Scanner(new File(file));
@@ -51,44 +59,13 @@ public class CSVParser {
 		    	events.add(input[i]);
 		    }
 		    
-		    Entry entry = createEntry(uID, fName, sName, address, town, dOB, email, events);
-		    out.add(entry);
+		    out.add(EntryUtils.createEntry(uID, fName, sName, address, town, dOB, email, events));
 		}
 		
 		sc.close();
 		
 		return out;
 		
-	}
-	
-	private static Entry createEntry(String uID, String fName, String sName, String address, String town, Date dOB, String email, List<String> events) {
-		Entry entry = new Entry();
-		entry.setUniqueID(uID);
-		entry.setFirstName(fName);
-		entry.setLastName(sName);
-		entry.setAddress(address, town);
-		entry.setEmail(email);
-		entry.setDOB(dOB);
-		
-		for (int i = 0; i < events.size() - 1; i++){
-			entry.addAttendedEvent(events.get(i));
-		}
-		
-		
-		
-		return entry;
-	}
-	
-	public static String[] getHeader(String file) {
-		String delimiter = ",";
-		sc = new Scanner(file);
-		
-		String line = sc.nextLine();
-		String[] columns = line.split(delimiter);
-		
-		return columns;
-	}
-	
-	
+	}	
 	
 }
