@@ -1,4 +1,7 @@
-Music-Fans---National-5-Coursework-Project
-==========================================
+Music Fans - Adam Hirst National 5 Computing Coursework
+=======================================================
 
-Adam Hirst's National 5 coursework project - Programmed in Java
+This is a Java program built for the National 5 Computing Coursework ('Music Fans' assignment).
+
+Visit the wiki to get started!
+https://github.com/AuroraWebServices/Nat5Project/wiki
