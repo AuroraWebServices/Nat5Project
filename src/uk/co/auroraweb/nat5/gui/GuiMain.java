@@ -31,6 +31,9 @@ import uk.co.auroraweb.nat5.util.TableUtils;
 
 public class GuiMain extends JFrame implements ActionListener {
 	
+	List<Entry> rawData;
+	List<Entry> filteredData;
+	
 	private static final long serialVersionUID = 1L;
 	
 	//Panel
@@ -91,9 +94,8 @@ public class GuiMain extends JFrame implements ActionListener {
 		    public void mouseClicked(java.awt.event.MouseEvent evt) {
 		        int row = tblFans.rowAtPoint(evt.getPoint());
 		        int col = tblFans.columnAtPoint(evt.getPoint());
-		        if (row >= 0 && col >= 0) {
-		            //TODO: OPEN PROFILE PAGE
-		        	System.out.print("test");
+		        if (row >= 0 && col >= 0 && evt.getClickCount() >= 2) {
+		            new GuiProfile(rawData.get(tblFans.getSelectedRow()));
 		        }
 		    }
 		});
@@ -138,9 +140,9 @@ public class GuiMain extends JFrame implements ActionListener {
 			
 			if (FileUtils.verifyFileFormat(file, "csv")) {
 				
-				List<Entry> data = CSVParser.parseCSV(file);
+				rawData = CSVParser.parseCSV(file);
 				
-				DefaultTableModel model = TableUtils.updatedTable(data);
+				DefaultTableModel model = TableUtils.updatedTable(rawData);
 				tblFans.setModel(model);
 				model.fireTableDataChanged();
 				
@@ -154,7 +156,6 @@ public class GuiMain extends JFrame implements ActionListener {
 
 		} else if (e.getSource() == btnExport) {
 			//TODO: export functionality
-			System.out.print(getSize());
 		} else if (e.getSource() == btnExit) {
 			//Close the program
 			super.dispose();

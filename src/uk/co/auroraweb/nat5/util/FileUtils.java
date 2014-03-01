@@ -22,8 +22,6 @@ public class FileUtils {
 			fileExtension = file.substring(i+1);
 		}
 		
-		System.out.println(fileExtension);
-		
 		if (f.isFile() && fileExtension.equalsIgnoreCase(ext)) {
 			return true;
 		} else {

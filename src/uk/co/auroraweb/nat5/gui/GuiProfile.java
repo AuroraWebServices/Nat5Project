@@ -1,57 +1,102 @@
-//Gui will display information on selected fan
-//TODO: *
-
-/**
- * Diagram:
+/*
+ * GUI Diagram (WIP):
  * 
- * 	+--------+----------------------+
- *  |        |Name					|
- *  |QR code |Email	Address			|
- *  |		 |Address				|
- *  +--------+----------------------+
- *  |		Attended Events			|
- *  |		   (ListBox)			|
- *  |								|
- *  +-------------------------------+
- *  |					 [Exit btn] |
- *  +-------------------------------+
+ * 	+---------+---------------------------+
+ *  | QR Code | Name (Full Name)          |
+ *  |         | Address                   |
+ *  |         | Email Address             |
+ *  |		  | Date of Birth (Age)       |
+ *  +---------+---------------------------+
+ *  | 			Events Attended:          |
+ *  | 			+-----------------------+ |
+ *  | 			|                       | |
+ *  | 			|                       | |
+ *  | 			+-----------------------+ |
+ *  +-------------------------------------+
+ *  |               [Save QR Code][Close] |
+ *  +-------------------------------------+
  * 
- * 	v1,
  */
 
 package uk.co.auroraweb.nat5.gui;
 
-import java.awt.Image;
-import java.util.List;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
 
+import net.miginfocom.swing.MigLayout;
 import uk.co.auroraweb.nat5.Entry;
-import uk.co.auroraweb.nat5.util.QRUtils;
 import uk.co.auroraweb.nat5.util.DateUtils;
+import uk.co.auroraweb.nat5.util.JListModel;
+import uk.co.auroraweb.nat5.util.JPanelImage;
+import uk.co.auroraweb.nat5.util.QRUtils;
 
 public class GuiProfile extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 	
-	JButton btnClose = new JButton();
+	JPanel panel = new JPanel();
+	JPanel panelInfo = new JPanel();
+	JPanelImage panelQR = new JPanelImage();	
 	
-	//DrawPanel panel = new DrawPanel();
+	//Variable labels
+	JLabel lblName = new JLabel();
+	JLabel lblAddress = new JLabel();
+	JLabel lblEmail = new JLabel();
+	JLabel lblDOB = new JLabel();
 	
+	//Static labels
+	JLabel lblEventsAttended = new JLabel("Events Attended:");	
 	
-	//TODO: Manage import data
-	public GuiProfile(Entry entry) {
-		super("National 5 Project");
+	JList<String> lstEventsAttended = new JList<String>();
+	
+	//Buttons
+	JButton btnSaveQR = new JButton("Save QR Code");
+	JButton btnClose = new JButton("Close");
+	
+	public GuiProfile(Entry entry) {		
+		super("National 5 - Music Fans");
 		
-		String fullName = entry.getFullName();
-		String email = entry.getEmail();
-		String address = entry.getAddress();
-		String dOB = DateUtils.formatDate(entry.getDOB(), "dd/MM/yy");
-		List<String> attendedEvents = entry.getAttendedEvents();
+		//Set Name Label
+		lblName.setText(entry.getFullName());
 		
-		Image qrCode = QRUtils.generateQRCode(email);
+		//Set Email Label
+		lblEmail.setText(entry.getEmail());
 		
+		//Set Address Label
+		lblAddress.setText(entry.getAddress());
+		
+		//Set Date of Birth Label
+		lblDOB.setText(DateUtils.formatDate(entry.getDOB(), "dd/MM/yy"));
+		
+		//Attended Events List
+		lstEventsAttended = new JList<String>(new JListModel<String>(entry.getAttendedEvents()));
+		
+		//Set QR Code Image
+		BufferedImage qrCode = QRUtils.generateQRCode(entry.getEmail());
+		panelQR.setBufferedImage(qrCode);
+		
+		
+		//Info panel
+		panelInfo.setLayout(new MigLayout());
+		panel.add(lblName, "wrap");
+		panel.add(lblAddress, "wrap");
+		panel.add(lblEmail, "wrap");
+		panel.add(lblDOB);
+		
+		//Main Panel
+		panel.setLayout(new MigLayout("", "[] [fill, grow]", "[] [fill, grow] [fill, grow] []"));
+		panel.add(panelQR);
+		panel.add(panelInfo, "wrap");
+		panel.add(lblEventsAttended, "wrap, skip");
+		panel.add(lstEventsAttended, "wrap, skip");
+		panel.add(btnSaveQR, "skip, split 2");
+		panel.add(btnClose);
 	}
+	
 	
 }

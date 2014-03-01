@@ -2,7 +2,7 @@ package uk.co.auroraweb.nat5.gui;
 
 import java.awt.Dimension;
 
-import javax.swing.JComboBox;
+//import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,7 +19,7 @@ public class GuiFilter extends JFrame {
 	JLabel lblType = new JLabel("Filter type:"); 
 	JLabel lblArgs = new JLabel("Arguments:");
 	
-	JComboBox cmbType = new JComboBox(new String[] {"Events attended", "Age"});
+	//JComboBox cmbType = new JComboBox(new String[] {"Events attended", "Age"}); TODO fix
 	
 	JRadioButton btn = new JRadioButton();
 	
@@ -28,7 +28,7 @@ public class GuiFilter extends JFrame {
 		
 		panel.setLayout(new MigLayout());
 		
-		panel.add(cmbType);
+		//panel.add(cmbType);
 		
 		add(panel);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
