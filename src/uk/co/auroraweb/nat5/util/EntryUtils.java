@@ -9,16 +9,17 @@ public class EntryUtils {
 	
 	/**
 	 * Calculates and returns the number of attended events depending
-	 * on the events param provided.
+	 * on the events parameter provided.
 	 *  
 	 * @param 	events	The input file to be read
 	 * @return			An integer with the number of attended events
+	 * @see 			List
 	 */
 	public static int getEventsAttended(List<String> events) {
-		int eventsAttended = 0;
+		int eventsAttended = 1;
 		
 		for (int i = 0; i < events.size(); i++) {
-			if (events.get(i) != "") {
+			if (events.get(i).equalsIgnoreCase("yes")) {
 				eventsAttended++;
 			}
 		}
@@ -38,6 +39,7 @@ public class EntryUtils {
 	 * @param	email	The fan's email
 	 * @param	events	An ArrayList containing 
 	 * @return			An ArrayList containing all the entries of the CSV.
+	 * @see				List
 	 */
 	public static Entry createEntry(String uID, String fName, String sName, String address, String town, Date dOB, String email, List<String> events) {
 		Entry entry = new Entry();

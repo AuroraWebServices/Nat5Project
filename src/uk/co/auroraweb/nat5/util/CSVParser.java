@@ -50,12 +50,12 @@ public class CSVParser {
 		    String sName = input[2];
 		    String address = input[3];
 		    String town = input[4];
-		    Date dOB = Utils.parseDate(input[5]);   
+		    Date dOB = DateUtils.parseDate(input[5]);   
 		    String email = input[6];
 		    
 		    List<String> events = new ArrayList<String>();
 		    
-		    for (int i = 8; i < input.length - 1; i++) {
+		    for (int i = 7; i < input.length; i++) {
 		    	events.add(input[i]);
 		    }
 		    

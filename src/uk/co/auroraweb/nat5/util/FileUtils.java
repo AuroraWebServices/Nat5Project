@@ -4,7 +4,14 @@ import java.io.File;
 
 public class FileUtils {
 
-	public static boolean verifyFileFormat(String file, String format) {
+	/**
+	 * Checks if a file extension is equal to the String parameter.
+	 * 
+	 * @param file the location of the file to check
+	 * @param ext the extension of the file
+	 * @return true if the file extension if equal to the 'ext' parameter
+	 */
+	public static boolean verifyFileFormat(String file, String ext) {
 		
 		File f = new File(file);
 		
@@ -17,7 +24,7 @@ public class FileUtils {
 		
 		System.out.println(fileExtension);
 		
-		if (f.isFile() && fileExtension.equalsIgnoreCase(format)) {
+		if (f.isFile() && fileExtension.equalsIgnoreCase(ext)) {
 			return true;
 		} else {
 			return false;

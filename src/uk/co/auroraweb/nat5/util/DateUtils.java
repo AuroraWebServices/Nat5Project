@@ -4,8 +4,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Utils {
+public class DateUtils {
 	
+	
+	/**
+	 * Returns a Date from a parsed String.
+	 * 
+	 * @param date a String to be parsed into a Date
+	 * @return the parsed date
+	 */
 	public static Date parseDate(String date){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
 		Date output = new Date();
@@ -19,6 +26,14 @@ public class Utils {
 		return output;
 	}
 	
+	/**
+	 * Returns a formatted date from a Date and a format as a 
+	 * String.
+	 * 
+	 * @param date a Date to format
+	 * @param format the requested format (example: "dd/MM/yy")
+	 * @return a formatted Date as a String
+	 */
 	public static String formatDate(Date date, String format) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		
