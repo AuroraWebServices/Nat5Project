@@ -3,6 +3,8 @@
 
 package uk.co.auroraweb.nat5.gui;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -13,11 +15,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
@@ -46,6 +48,9 @@ public class GuiMain extends JFrame implements ActionListener {
 	//Export button
 	JButton btnExport = new JButton("Export data...");
 	
+	//Filter button
+	JButton btnFilter = new JButton("Filter...");
+	
 	//Exit button
 	JButton btnExit = new JButton("Exit");
 	
@@ -55,8 +60,11 @@ public class GuiMain extends JFrame implements ActionListener {
 	//File chooser (To allow the user to select the desired file for parsing
 	JFileChooser fc = new JFileChooser();
 	
-	//Progress bar
-	JProgressBar pb = new JProgressBar();
+	//Help Button
+	JButton btnHelp = new JButton("?");
+	
+	//Copyright Label
+	JLabel lblCopy = new JLabel("National 5 Music Fans | Copyright Adam Hirst 2014.", SwingConstants.CENTER);
 	
 	public GuiMain() {
 		//Sets the gui title
@@ -68,6 +76,12 @@ public class GuiMain extends JFrame implements ActionListener {
 		btnExit.addActionListener(this);
 		
 		fc.setFileFilter(new FileNameExtensionFilter("CSV Files (.csv)", "csv"));
+		
+		txtFile.setEditable(false);
+		txtFile.setBackground(Color.LIGHT_GRAY);
+		
+		btnExport.setEnabled(false);
+		btnFilter.setEnabled(false);
 		
 		tblFans = TableUtils.generateTable();
 		tblFans.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -91,14 +105,17 @@ public class GuiMain extends JFrame implements ActionListener {
 		//Top bar
 		panel.add(lblFile);
 		panel.add(txtFile);
-		panel.add(btnImport, "wrap");
+		panel.add(btnImport, "split 2");
+		panel.add(btnExport, "wrap");
 		
 		//Table
 		panel.add(new JScrollPane(tblFans), "span 3, grow, wrap");
 		
-		panel.add(pb, "span 2");
+		panel.add(btnHelp);
 		
-		panel.add(btnExport, "split 2");
+		panel.add(lblCopy);
+		
+		panel.add(btnFilter, "split 2");
 		panel.add(btnExit);
 		
 		add(panel);
@@ -106,6 +123,7 @@ public class GuiMain extends JFrame implements ActionListener {
 		pack();
 		setLocation(300, 300);
 		setSize(900, 500);
+		setMinimumSize(new Dimension(900,500));
 		setVisible(true);
 	}
 
@@ -113,8 +131,6 @@ public class GuiMain extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		if (e.getSource() == btnImport) {
-			//Sets the progress bars value to 0
-			pb.setValue(0);
 			
 			fc.showOpenDialog(this);
 			
@@ -128,9 +144,10 @@ public class GuiMain extends JFrame implements ActionListener {
 				tblFans.setModel(model);
 				model.fireTableDataChanged();
 				
-				pb.setValue(100); //100
-				
 				txtFile.setText(file);
+				
+				btnExport.setEnabled(true);
+				btnFilter.setEnabled(true);
 			} else {
 				JOptionPane.showMessageDialog(null, "Error: File could not be read.", "National 5 - Music Fans", JOptionPane.ERROR_MESSAGE);
 			}

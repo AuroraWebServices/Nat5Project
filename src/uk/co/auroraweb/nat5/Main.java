@@ -3,7 +3,7 @@
 
 package uk.co.auroraweb.nat5;
 
-import uk.co.auroraweb.nat5.gui.*;
+import uk.co.auroraweb.nat5.gui.GuiMain;
 
 public class Main {
 	
@@ -11,7 +11,7 @@ public class Main {
 		
 		//Load the main gui on load.
 		new GuiMain();
-		
+	
 	}
 	
 }
