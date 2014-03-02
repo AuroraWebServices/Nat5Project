@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import uk.co.auroraweb.nat5.util.DateUtils;
+
 public class Entry {
 	
 	
@@ -28,7 +30,7 @@ public class Entry {
 	 * @return the full name
 	 */
 	public String getFullName() {
-		return fName + sName;
+		if (fName.charAt(fName.length() - 1) == " ".charAt(0)) {return fName + " " + sName;} else {return fName + sName;}
 	}
 	
 	/**
@@ -77,6 +79,22 @@ public class Entry {
 	 */
 	public List<String> getAttendedEvents() {
 		return events;
+	}
+	
+	/**
+	 * Gets the number of events attended
+	 * @return an integer with the number of events attended
+	 */
+	public int getNoEventsAttended() {
+		return events.size();
+	}
+	
+	/**
+	 * Gets an entry's age
+	 * @return the age
+	 */
+	public int getAge() {
+		return DateUtils.getYearsAgo(dOB);
 	}
 	
 	/**
