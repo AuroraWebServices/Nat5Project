@@ -5,6 +5,7 @@ package uk.co.auroraweb.nat5.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -38,8 +39,12 @@ public class CSVParser {
 			e.printStackTrace();
 		}
 		
+		String fLine = sc.nextLine();
+		String[] fInput = (fLine.split(delimiter));
+		String[] fEvents = Arrays.copyOfRange(fInput, 7, fInput.length);
+	    
 		String line;
-
+		
 		while (sc.hasNextLine()) 
 		{
 		    line = sc.nextLine();
@@ -53,13 +58,17 @@ public class CSVParser {
 		    Date dOB = DateUtils.parseDate(input[5]);   
 		    String email = input[6];
 		    
-		    List<String> events = new ArrayList<String>();
+		    String[] events = Arrays.copyOfRange(input,  7, input.length);
+		    List<String> eventsAttended = new ArrayList<String>();
 		    
-		    for (int i = 7; i < input.length; i++) {
-		    	events.add(input[i]);
+		    //If events[i] was attended, then get the name of the event by referencing fEvents[i]
+		    for (int i = 0; i < events.length; i++) {
+		    	if (EntryUtils.attendedEvent(events[i])) {
+		    		eventsAttended.add(fEvents[i]);
+		    	}
 		    }
 		    
-		    out.add(EntryUtils.createEntry(uID, fName, sName, address, town, dOB, email, events));
+		    out.add(EntryUtils.createEntry(uID, fName, sName, address, town, dOB, email, eventsAttended));
 		}
 		
 		sc.close();
