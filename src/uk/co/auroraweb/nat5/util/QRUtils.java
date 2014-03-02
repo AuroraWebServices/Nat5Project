@@ -42,8 +42,7 @@ public class QRUtils {
 	 * @return      the image provided by the QR Code API
 	 * @see         BufferedImage
 	 */
-	public static BufferedImage generateQRCode(String data, Dimension size) {
-
+	public static BufferedImage generateQRCode(String data, Dimension size) {		
 		try {
 			URL url = new URL("https://api.qrserver.com/v1/create-qr-code/?size=" + (int) size.getWidth() + "x" + (int)size.getHeight() +"&data=" + data);
 			BufferedImage image = ImageIO.read(url);
@@ -62,6 +61,14 @@ public class QRUtils {
 			return null;
 		}
 		
+	}
+	
+	public static String generateMarkupQRCode(String data) {
+		return generateMarkupQRCode(data, new Dimension(150, 150));
+	}
+	
+	public static String generateMarkupQRCode(String data, Dimension size) {
+		return "<HTML><IMG src=\"http://api.auroraweb.co.uk/?size=" + size.width + "x" + size.height + "&data=" + data + "\"></HTML>";
 	}
 	
 }
