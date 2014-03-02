@@ -2,6 +2,7 @@ package uk.co.auroraweb.nat5.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtils {
@@ -40,6 +41,28 @@ public class DateUtils {
 		String out = dateFormat.format(date);
 		
 		return out;
+	}
+	
+	/**
+	 * Returns the number of years between now and the Date target.
+	 * 
+	 * @param target the target date (How many years between then and now)
+	 * @return the number of years between target and now
+	 */
+	public static int getYearsAgo(Date target) {
+		
+		Calendar targetCal = Calendar.getInstance();
+		targetCal.setTime(target);
+		
+		Calendar now = Calendar.getInstance();
+		
+		int years = now.get(Calendar.YEAR) - targetCal.get(Calendar.YEAR);
+		
+		if (now.get(Calendar.DAY_OF_YEAR) <= targetCal.get(Calendar.DAY_OF_YEAR)) {
+			years--;
+		}
+		
+		return years;
 	}
 	
 }

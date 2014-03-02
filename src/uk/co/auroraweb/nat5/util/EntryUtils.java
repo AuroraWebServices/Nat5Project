@@ -8,6 +8,16 @@ import uk.co.auroraweb.nat5.Entry;
 public class EntryUtils {
 	
 	/**
+	 * Returns true if the String event has attended an event
+	 * 
+	 * @param event the string to be tested
+	 * @return true if the String event is equal to "Yes", "1" or "true"
+	 */
+	public static boolean attendedEvent(String event) {
+		return event.equalsIgnoreCase("yes") || event.equals("1") || event.equalsIgnoreCase("true");
+	}
+	
+	/**
 	 * Calculates and returns the number of attended events depending
 	 * on the events parameter provided.
 	 *  
@@ -15,15 +25,16 @@ public class EntryUtils {
 	 * @return			An integer with the number of attended events
 	 * @see 			List
 	 */
+	@Deprecated
 	public static int getEventsAttended(List<String> events) {
 		int eventsAttended = 1;
 		
 		for (int i = 0; i < events.size(); i++) {
-			if (events.get(i).equalsIgnoreCase("yes")) {
+			if (attendedEvent(events.get(i))) {
 				eventsAttended++;
 			}
 		}
-		
+				
 		return eventsAttended;
 	}
 	
@@ -50,7 +61,7 @@ public class EntryUtils {
 		entry.setEmail(email);
 		entry.setDOB(dOB);
 		
-		for (int i = 0; i < events.size() - 1; i++){
+		for (int i = 0; i < events.size(); i++){
 			entry.addAttendedEvent(events.get(i));
 		}
 		
