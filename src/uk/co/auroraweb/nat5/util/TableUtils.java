@@ -5,8 +5,10 @@ package uk.co.auroraweb.nat5.util;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -81,13 +83,26 @@ public class TableUtils {
 			formattedData[i][3] = data.get(i).getAddress();
 			formattedData[i][4] = DateUtils.formatDate(data.get(i).getDOB(), "dd/MM/yy");
 			formattedData[i][5] = data.get(i).getEmail();
-			formattedData[i][6] = Integer.toString(EntryUtils.getEventsAttended(data.get(i).getAttendedEvents()));
+			formattedData[i][6] = Integer.toString(data.get(i).getNoEventsAttended());
 			
 		}
 		
 		
 		return new DefaultTableModel(formattedData, new String [] {"Unique ID", "Forename", "Surname", "Address", "Date of Birth" ,"E-Mail Address" ,"Events attended"});
 		
+	}
+	
+	public static RowFilter<DefaultTableModel, Object> filterFromText(DefaultTableModel model, String text) {
+		
+		RowFilter<DefaultTableModel, Object> filter = null;
+		
+		try {
+			filter = RowFilter.regexFilter(text, 0);	
+		} catch (PatternSyntaxException e) { 
+			e.printStackTrace(); 
+		}
+		
+		return filter;
 	}
 	
 }
