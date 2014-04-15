@@ -30,7 +30,7 @@ public class Entry {
 	 * @return the full name
 	 */
 	public String getFullName() {
-		if (fName.charAt(fName.length() - 1) == " ".charAt(0)) {return fName + " " + sName;} else {return fName + sName;}
+		if (fName.charAt(fName.length() - 1) != " ".charAt(0)) {return fName + " " + sName;} else {return fName + sName;}
 	}
 	
 	/**
@@ -95,6 +95,24 @@ public class Entry {
 	 */
 	public int getAge() {
 		return DateUtils.getYearsAgo(dOB);
+	}
+	
+	public int getDiscount(int perEvent) {
+		if (getNoEventsAttended() < 3) {
+			return 0;
+		} else {
+			return (getNoEventsAttended() - 2) * perEvent;
+		}
+	}
+	
+	/**
+	 * Returns true if the entry has attended more events than the 
+	 * threshold parameter
+	 * @param threshold the minimum number of events to attend to be considered as loyal
+	 * @return true if the entry has attended more events than the set threshold
+	 */
+	public boolean isLoyal(int threshold) {
+		return events.size() >= threshold;
 	}
 	
 	/**

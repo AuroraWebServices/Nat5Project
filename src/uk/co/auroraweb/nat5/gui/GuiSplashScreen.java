@@ -1,6 +1,5 @@
 package uk.co.auroraweb.nat5.gui;
 
-
 import java.awt.Dimension;
 import java.net.URL;
 

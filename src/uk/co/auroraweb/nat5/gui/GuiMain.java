@@ -1,6 +1,3 @@
-//Main Gui - Displays a button used to import a .csv and displays a table with fan information
-//TODO: Cleanup! (Drastically needed)
-
 package uk.co.auroraweb.nat5.gui;
 
 import java.awt.Color;
@@ -9,13 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,11 +25,16 @@ import javax.swing.table.TableRowSorter;
 
 import net.miginfocom.swing.MigLayout;
 import uk.co.auroraweb.nat5.Entry;
+import uk.co.auroraweb.nat5.util.AlertManager;
 import uk.co.auroraweb.nat5.util.CSVParser;
+import uk.co.auroraweb.nat5.util.EntryUtils;
 import uk.co.auroraweb.nat5.util.FileUtils;
 import uk.co.auroraweb.nat5.util.TableUtils;
 
 public class GuiMain extends JFrame implements ActionListener {
+	
+	//options[0] = Loyalty Threshold (Set to 3 by default); options[1] = Random entry selection number; options[2] = Discount per event (%)
+	int options[] = {3, 2, 10};
 	
 	List<Entry> rawData;
 	List<Entry> filteredData;
@@ -53,11 +55,8 @@ public class GuiMain extends JFrame implements ActionListener {
 	//Import button
 	JButton btnImport = new JButton("Import data...");
 	
-	//Export button
-	JButton btnExport = new JButton("Export data...");
-	
 	//Filter button
-	JButton btnFilter = new JButton("Filter...");
+	JButton btnOptions = new JButton("Settings...");
 	
 	//Exit button
 	JButton btnExit = new JButton("Exit");
@@ -80,8 +79,7 @@ public class GuiMain extends JFrame implements ActionListener {
 		
 		//Adds the event listener for the import button
 		btnImport.addActionListener(this);
-		btnExport.addActionListener(this);
-		btnFilter.addActionListener(this);
+		btnOptions.addActionListener(this);
 		btnAbout.addActionListener(this);
 		btnExit.addActionListener(this);
 		
@@ -89,9 +87,6 @@ public class GuiMain extends JFrame implements ActionListener {
 		
 		txtFile.setEditable(false);
 		txtFile.setBackground(Color.LIGHT_GRAY);
-		
-		btnExport.setEnabled(false);
-		btnFilter.setEnabled(false);
 		
 		tblFans = TableUtils.generateTable();
 		tblFans.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -104,8 +99,8 @@ public class GuiMain extends JFrame implements ActionListener {
 		        int row = tblFans.rowAtPoint(evt.getPoint());
 		        int col = tblFans.columnAtPoint(evt.getPoint());
 		        if (row >= 0 && col >= 0 && evt.getClickCount() >= 2) {
-		            new GuiProfile(frmThis, true, rawData.get(tblFans.getSelectedRow()));
-		        }
+		            new GuiProfile(frmThis, rawData.get(tblFans.getSelectedRow()), options);
+		        }		        
 		    }
 		});
 		
@@ -117,8 +112,7 @@ public class GuiMain extends JFrame implements ActionListener {
 		//Top bar
 		panel.add(lblFile);
 		panel.add(txtFile);
-		panel.add(btnImport, "split 2");
-		panel.add(btnExport, "wrap");
+		panel.add(btnImport, "wrap");
 		
 		//Table
 		panel.add(new JScrollPane(tblFans), "span 3, grow, wrap");
@@ -127,7 +121,7 @@ public class GuiMain extends JFrame implements ActionListener {
 		
 		panel.add(lblCopy);
 		
-		panel.add(btnFilter, "split 2");
+		panel.add(btnOptions, "split 2");
 		panel.add(btnExit);
 		
 		add(panel);
@@ -136,10 +130,6 @@ public class GuiMain extends JFrame implements ActionListener {
 		setSize(900, 500);
 		setMinimumSize(new Dimension(900,500));
 		
-		//Set starting location to center of screen
-		
-		//Dimension dmnScreen = Toolkit.getDefaultToolkit().getScreenSize();	--Same as setting relative loaction to null
-		//setLocation(dmnScreen.width/2 - 450, dmnScreen.height/2 - 250);
 		setLocationRelativeTo(null);
 		
 		URL iconURL = getClass().getResource("/res/icon.png");
@@ -149,12 +139,39 @@ public class GuiMain extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 	
-	public void filterTable(GuiFilter guiFilter) {
+	public void refreshTable() {
+		tblModel = TableUtils.updatedTable(rawData, options);
+		tblFans.setModel(tblModel);
+		tblModel.fireTableDataChanged();
+			
+		tableSorter = new TableRowSorter<DefaultTableModel>(tblModel);
+	}
+	
+	public void updateOptions(GuiOptions guiOptions) {
+		options[0] = guiOptions.getLoyaltyThreshold();
+		options[1] = guiOptions.getRndSelectionNo();
+		options[2] = guiOptions.getDiscountPerEvent();
 		
-		if (guiFilter.getFilterBy() == 0) {
-			tableSorter.setRowFilter(TableUtils.filterFromText(tblModel, guiFilter.getSearch()));
+		if (rawData != null) {
+			refreshTable();
+			generateWinners();
 		}
 		
+		AlertManager.alert(this, AlertManager.INFO_MSG, "Options successfuly updated!");
+	}
+	
+	private void generateWinners() {
+		List<Entry> loyalFans = EntryUtils.getLoyalFans(rawData, options);
+		Random rnd = new Random();
+		
+		for (int i = 0; i < options[1]; i++) {
+			int rndIndex = rnd.nextInt(loyalFans.size());
+			Entry winner = loyalFans.get(rndIndex);
+			
+			loyalFans.remove(rndIndex);
+			
+			tblFans.setValueAt("Winner", rawData.indexOf(winner), 7);
+		}
 	}
 
 	@Override
@@ -162,46 +179,35 @@ public class GuiMain extends JFrame implements ActionListener {
 		
 		if (e.getSource() == btnImport) {
 			
-			fc.showOpenDialog(this);
+			if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 			
-			String file = fc.getSelectedFile().getPath();
+				String file = fc.getSelectedFile().getPath();
 			
-			if (FileUtils.verifyFileFormat(file, "csv")) {
-				
-				rawData = CSVParser.parseCSV(file);
-				
-				tblModel = TableUtils.updatedTable(rawData);
-				tblFans.setModel(tblModel);
-				tblModel.fireTableDataChanged();
-				
-				tableSorter = new TableRowSorter<DefaultTableModel>(tblModel);
-				
-				txtFile.setText(file);
-				
-				//btnExport.setEnabled(true); --TODO add exporting functionality
-				btnFilter.setEnabled(true);
-				
-			} else {
-				JOptionPane.showMessageDialog(null, "Error: File could not be read.", "National 5 - Music Fans", JOptionPane.ERROR_MESSAGE);
-			}
-
-		} else if (e.getSource() == btnExport) {
-			//TODO: export functionality
-		} else if (e.getSource() == btnFilter) {
-			GuiFilter filterOptions = new GuiFilter(this, true);
-			
-			if (filterOptions.filterChanged) {
-				
-				if (filterOptions.getFilterBy() == 0) {
-					tableSorter.setRowFilter(TableUtils.filterFromText(tblModel, filterOptions.getSearch()));
+				if (FileUtils.verifyFileFormat(file, "csv")) {
+					
+					rawData = CSVParser.parseCSV(file, this);
+					
+					if (rawData != null) {
+						refreshTable();
+						generateWinners();
+						txtFile.setText(file);
+						AlertManager.alert(this,  AlertManager.INFO_MSG, "File imported with no errors!");
+					}
+					
+				} else {
+					//Provoke error
+					AlertManager.alert(this, AlertManager.ERROR_MSG, "Error: File could not be read.");
 				}
-				
 			}
+		} else if (e.getSource() == btnOptions) {
+			//Create options window
+			new GuiOptions(this, options);
+			
 		} else if (e.getSource() == btnAbout) {
-			JOptionPane.showMessageDialog(this, "Music Fans - National 5 Project\nA Java program by Adam Hirst\nFor more information on this project, visit\n<HTML><FONT color=\"#000099\"><U>http://nat5.auroraweb.co.uk</U></FONT></HTML>", "About", JOptionPane.INFORMATION_MESSAGE);
+			AlertManager.alert(this, AlertManager.INFO_MSG, "Music Fans - National 5 Project\nA Java program by Adam Hirst\nFor more information on this project, visit\n<HTML><FONT color=\"#000099\"><U>http://nat5.auroraweb.co.uk</U></FONT></HTML>");
 		} else if (e.getSource() == btnExit) {
 			//Close the program
-			super.dispose();
+			dispose();
 		}
 
 	}

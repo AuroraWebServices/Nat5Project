@@ -1,5 +1,6 @@
 package uk.co.auroraweb.nat5.util;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,6 +67,18 @@ public class EntryUtils {
 		}
 		
 		return entry;
+	}
+	
+	public static List<Entry> getLoyalFans(List<Entry> data, int[] options) {
+		List<Entry> loyalFans = new ArrayList<Entry>();
+		
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i).isLoyal(options[0])) {
+				loyalFans.add(data.get(i));
+			}
+		}
+		
+		return loyalFans;
 	}
 	
 }

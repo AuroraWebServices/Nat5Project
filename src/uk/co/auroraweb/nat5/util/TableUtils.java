@@ -25,7 +25,7 @@ public class TableUtils {
 	 */
 	public static JTable generateTable() {
 		
-		return new JTable(new String[][] {}, new String[] {"Unique ID", "Forename", "Surname", "Address", "Date of Birth" ,"E-Mail Address" ,"Events attended"})
+		return new JTable(new String[][] {}, new String[] {"Unique ID", "Forename", "Surname", "Address", "Date of Birth" ,"E-Mail Address" ,"Events attended", "Fan Type"})
 		{
 
 			private static final long serialVersionUID = 1L;
@@ -49,9 +49,14 @@ public class TableUtils {
 					 c.setBackground(Color.LIGHT_GRAY);
 				 }
 				 
-				 //Sets the row background color to orange when selected
+				 //Sets the row background color to cyan when selected
 				 if (isCellSelected(data, columns)) {
 					 c.setBackground(Color.CYAN);
+				 }
+				 
+				 //If the person has been selected, make the row green
+				 if (getValueAt(data, 7) == "Winner") {
+					 c.setBackground(Color.GREEN);
 				 }
 				 
 				 return c;
@@ -70,10 +75,8 @@ public class TableUtils {
 	 * @see DefaultTableModel
 	 * @see List
 	 */
-	public static DefaultTableModel updatedTable(List<Entry> data) {
-		String[][] formattedData = new String[data.size()][7];
-		
-		
+	public static DefaultTableModel updatedTable(List<Entry> data, int[] options) {
+		String[][] formattedData = new String[data.size()][8];
 		
 		for (int i = 0; i < data.size(); i++) {
 			
@@ -85,10 +88,15 @@ public class TableUtils {
 			formattedData[i][5] = data.get(i).getEmail();
 			formattedData[i][6] = Integer.toString(data.get(i).getNoEventsAttended());
 			
+			if (data.get(i).isLoyal(options[0])) {
+				formattedData[i][7] = "Yes";
+			} else {
+				formattedData[i][7] = "No";
+			}
+			
 		}
 		
-		
-		return new DefaultTableModel(formattedData, new String [] {"Unique ID", "Forename", "Surname", "Address", "Date of Birth" ,"E-Mail Address" ,"Events attended"});
+		return new DefaultTableModel(formattedData, new String [] {"Unique ID", "Forename", "Surname", "Address", "Date of Birth" ,"E-Mail Address" ,"Events attended", "Fan Type"});
 		
 	}
 	
