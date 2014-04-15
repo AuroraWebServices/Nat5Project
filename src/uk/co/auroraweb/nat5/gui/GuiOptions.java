@@ -62,6 +62,7 @@ public class GuiOptions extends JDialog implements ActionListener {
 		//Set text fields to current options
 		txtLoyaltyThreshold.setText(String.valueOf(current.getLoyaltyThreshold()));
 		txtRndSelectionNo.setText(String.valueOf(current.getRndSelectionNo()));
+		txtDiscountPerEvent.setText(String.valueOf(current.getDiscountPerEvent()));
 	}
 	
 	private void generateUI() {
@@ -81,6 +82,8 @@ public class GuiOptions extends JDialog implements ActionListener {
 		panel.add(txtLoyaltyThreshold, "wrap");
 		panel.add(lblRndSelectionNo);
 		panel.add(txtRndSelectionNo, "wrap");
+		panel.add(lblDiscountPerEvent);
+		panel.add(txtDiscountPerEvent, "wrap");
 	
 		panel.add(btnOK, "span 2, split 2, align right");
 		panel.add(btnCancel);
