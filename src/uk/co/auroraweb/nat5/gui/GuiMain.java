@@ -21,7 +21,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 
 import net.miginfocom.swing.MigLayout;
 import uk.co.auroraweb.nat5.Entry;
@@ -34,11 +33,10 @@ import uk.co.auroraweb.nat5.util.TableUtils;
 public class GuiMain extends JFrame implements ActionListener {
 	
 	//options[0] = Loyalty Threshold (Set to 3 by default); options[1] = Random entry selection number; options[2] = Discount per event (%)
-	int options[] = {3, 2, 10};
+	int options[] = {3, 2, 10, 0};
 	
 	List<Entry> rawData;
-	List<Entry> filteredData;
-	TableRowSorter<DefaultTableModel> tableSorter;
+	List<Entry> loyalData;
 	DefaultTableModel tblModel;
 	
 	private static final long serialVersionUID = 1L;
@@ -90,8 +88,9 @@ public class GuiMain extends JFrame implements ActionListener {
 		
 		tblFans = TableUtils.generateTable();
 		tblFans.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblFans.getTableHeader().setReorderingAllowed(false);
 		
-		final JFrame frmThis = this;
+		final JFrame frame = this;
 		
 		tblFans.addMouseListener(new java.awt.event.MouseAdapter() {
 		    @Override
@@ -99,7 +98,13 @@ public class GuiMain extends JFrame implements ActionListener {
 		        int row = tblFans.rowAtPoint(evt.getPoint());
 		        int col = tblFans.columnAtPoint(evt.getPoint());
 		        if (row >= 0 && col >= 0 && evt.getClickCount() >= 2) {
-		            new GuiProfile(frmThis, rawData.get(tblFans.getSelectedRow()), options);
+		        	if (options[3] == 0) {
+		        		new GuiProfile(frame, rawData.get(EntryUtils.getIndexFromUniqueID(rawData, tblFans.getValueAt(row, 0).toString())), options);
+		        	} else { 
+		        		new GuiProfile(frame, loyalData.get(EntryUtils.getIndexFromUniqueID(loyalData, tblFans.getValueAt(row, 0).toString())), options);
+		        	}
+		        	
+		        	tblFans.getValueAt(row, 0);
 		        }		        
 		    }
 		});
@@ -139,29 +144,44 @@ public class GuiMain extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 	
-	public void refreshTable() {
-		tblModel = TableUtils.updatedTable(rawData, options);
+	/**
+	 * Refreshes the main table
+	 * @param data the data to fill the table with
+	 */
+	public void refreshTable(List<Entry> data) {
+		tblModel = TableUtils.updatedTable(data, options);
 		tblFans.setModel(tblModel);
 		tblModel.fireTableDataChanged();
-			
-		tableSorter = new TableRowSorter<DefaultTableModel>(tblModel);
 	}
 	
+	/**
+	 * Updates the options
+	 * @param guiOptions an instance of guiOptions to extract options from
+	 */
 	public void updateOptions(GuiOptions guiOptions) {
 		options[0] = guiOptions.getLoyaltyThreshold();
 		options[1] = guiOptions.getRndSelectionNo();
 		options[2] = guiOptions.getDiscountPerEvent();
+		options[3] = guiOptions.getIntLoyalOnly();
 		
-		if (rawData != null) {
-			refreshTable();
-			generateWinners();
+		
+		if (rawData != null && options[3] == 0) {
+			refreshTable(rawData);
+			generateWinners(rawData);
+		} else if (rawData != null && options[3] == 1) {
+			refreshTable(loyalData);
+			generateWinners(loyalData);
 		}
 		
 		AlertManager.alert(this, AlertManager.INFO_MSG, "Options successfuly updated!");
 	}
 	
-	private void generateWinners() {
-		List<Entry> loyalFans = EntryUtils.getLoyalFans(rawData, options);
+	/**
+	 * Generates winners based on the options and the List<Entry> 'data'
+	 * @param data the data to generate winners from
+	 */
+	private void generateWinners(List<Entry> data) {
+		List<Entry> loyalFans = EntryUtils.getLoyalFans(data, options);
 		Random rnd = new Random();
 		
 		for (int i = 0; i < options[1]; i++) {
@@ -170,7 +190,7 @@ public class GuiMain extends JFrame implements ActionListener {
 			
 			loyalFans.remove(rndIndex);
 			
-			tblFans.setValueAt("Winner", rawData.indexOf(winner), 7);
+			tblFans.setValueAt("Winner", data.indexOf(winner), 7);
 		}
 	}
 
@@ -185,11 +205,23 @@ public class GuiMain extends JFrame implements ActionListener {
 			
 				if (FileUtils.verifyFileFormat(file, "csv")) {
 					
-					rawData = CSVParser.parseCSV(file, this);
+					List<Entry> data = CSVParser.parseCSV(file, this);
+
 					
-					if (rawData != null) {
-						refreshTable();
-						generateWinners();
+					if (data != null) {
+						
+						rawData = data;
+						
+						loyalData = EntryUtils.getLoyalFans(rawData, options);
+						
+						if (options[3] == 1) {
+							refreshTable(loyalData);
+							generateWinners(loyalData);
+						} else {
+							refreshTable(rawData);
+							generateWinners(rawData);
+						}
+						
 						txtFile.setText(file);
 						AlertManager.alert(this,  AlertManager.INFO_MSG, "File imported with no errors!");
 					}

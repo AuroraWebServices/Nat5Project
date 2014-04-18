@@ -53,9 +53,13 @@ public class CSVParser {
 	    
 		String line;
 		
+		int entry = 0;
+		
 		inputLoop:
 		while (sc.hasNextLine()) 
 		{
+			entry++;
+			
 		    line = sc.nextLine();
 		    
 		    while (line == null || line.charAt(0) == ',') {
@@ -70,8 +74,8 @@ public class CSVParser {
 		    //Test to see if any of the required values are empty
 		    for (int i = 0; i < req.length - 1; i++) {
 		    	if (req[i].isEmpty()) {
-		    		//Provokes the error message
-		    		AlertManager.alert(frame, AlertManager.ERROR_MSG, "An error has occured: A required input is blank.");
+		    		//Provokes the error message (Entry + 1 to account for header line)
+		    		AlertManager.alert(frame, AlertManager.ERROR_MSG, "An error has occured: A required input is blank. Line number: " + (entry + 1));
 		    		//Sets errorOccured to true
 		    		errorOccured = true;
 		    		//Breaks from the import loop.

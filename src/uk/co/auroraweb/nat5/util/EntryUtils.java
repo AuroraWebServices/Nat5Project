@@ -19,27 +19,6 @@ public class EntryUtils {
 	}
 	
 	/**
-	 * Calculates and returns the number of attended events depending
-	 * on the events parameter provided.
-	 *  
-	 * @param 	events	The input file to be read
-	 * @return			An integer with the number of attended events
-	 * @see 			List
-	 */
-	@Deprecated
-	public static int getEventsAttended(List<String> events) {
-		int eventsAttended = 1;
-		
-		for (int i = 0; i < events.size(); i++) {
-			if (attendedEvent(events.get(i))) {
-				eventsAttended++;
-			}
-		}
-				
-		return eventsAttended;
-	}
-	
-	/**
 	 * Creates an instance of an Entry with the parameters provided
 	 * 
 	 * @param 	uID		The unique ID
@@ -49,7 +28,7 @@ public class EntryUtils {
 	 * @param	town	The fan's town
 	 * @param	dOB		The date of birth of the fan
 	 * @param	email	The fan's email
-	 * @param	events	An ArrayList containing 
+	 * @param	events	An ArrayList containing the events attended
 	 * @return			An ArrayList containing all the entries of the CSV.
 	 * @see				List
 	 */
@@ -69,6 +48,12 @@ public class EntryUtils {
 		return entry;
 	}
 	
+	/**
+	 * Filters a full list of entries to a list only populated with loyal fans
+	 * @param data the data to filter
+	 * @param options the options to determine loyalty threshold
+	 * @return a List<Entry> populated with royalty fans.
+	 */
 	public static List<Entry> getLoyalFans(List<Entry> data, int[] options) {
 		List<Entry> loyalFans = new ArrayList<Entry>();
 		
@@ -79,6 +64,29 @@ public class EntryUtils {
 		}
 		
 		return loyalFans;
+	}
+	
+	/**
+	 * Gives the index of an array list of entries by the unique ID of the entry
+	 * @param data the data to get the index of
+	 * @param uID the unique ID
+	 * @return the index of the array list.
+	 */
+	public static int getIndexFromUniqueID(List<Entry> data, String uID) {
+		
+		int returnVal = -1;
+		
+		testLoop:
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i).getUniqueID() == uID) {
+				returnVal = i;
+				
+				break testLoop;
+			}
+		}
+		
+		return returnVal;
+		
 	}
 	
 }

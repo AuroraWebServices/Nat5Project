@@ -1,14 +1,10 @@
-//Generates a table with formatting
-
 package uk.co.auroraweb.nat5.util;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 import javax.swing.JTable;
-import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -61,9 +57,9 @@ public class TableUtils {
 				 
 				 return c;
 			}
-			
-			//TODO: Add double click event handling
+		
 		};
+	
 	}
 	
 	/**
@@ -89,28 +85,15 @@ public class TableUtils {
 			formattedData[i][6] = Integer.toString(data.get(i).getNoEventsAttended());
 			
 			if (data.get(i).isLoyal(options[0])) {
-				formattedData[i][7] = "Yes";
+				formattedData[i][7] = "Loyal";
 			} else {
-				formattedData[i][7] = "No";
+				formattedData[i][7] = "Normal";
 			}
 			
 		}
 		
 		return new DefaultTableModel(formattedData, new String [] {"Unique ID", "Forename", "Surname", "Address", "Date of Birth" ,"E-Mail Address" ,"Events attended", "Fan Type"});
 		
-	}
-	
-	public static RowFilter<DefaultTableModel, Object> filterFromText(DefaultTableModel model, String text) {
-		
-		RowFilter<DefaultTableModel, Object> filter = null;
-		
-		try {
-			filter = RowFilter.regexFilter(text, 0);	
-		} catch (PatternSyntaxException e) { 
-			e.printStackTrace(); 
-		}
-		
-		return filter;
 	}
 	
 }

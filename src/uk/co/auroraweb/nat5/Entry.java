@@ -8,7 +8,6 @@ import uk.co.auroraweb.nat5.util.DateUtils;
 
 public class Entry {
 	
-	
 	private String uID;
 	private String fName;
 	private String sName;
@@ -90,18 +89,24 @@ public class Entry {
 	}
 	
 	/**
-	 * Gets an entry's age
+	 * Gets an fan's age
 	 * @return the age
 	 */
 	public int getAge() {
 		return DateUtils.getYearsAgo(dOB);
 	}
 	
-	public int getDiscount(int perEvent) {
-		if (getNoEventsAttended() < 3) {
+	/**
+	 * Returns the fan's discount
+	 * @param perEvent the discount per event attended
+	 * @param loyalThreshold the threshold of being considered as loyal
+	 * @return the fan's discount
+	 */
+	public int getDiscount(int perEvent, int loyalThreshold) {
+		if (getNoEventsAttended() < loyalThreshold) {
 			return 0;
 		} else {
-			return (getNoEventsAttended() - 2) * perEvent;
+			return getNoEventsAttended() * perEvent;
 		}
 	}
 	

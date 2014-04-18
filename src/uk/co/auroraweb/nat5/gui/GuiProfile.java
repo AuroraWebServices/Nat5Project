@@ -5,7 +5,9 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -20,7 +22,7 @@ import net.miginfocom.swing.MigLayout;
 import uk.co.auroraweb.nat5.Entry;
 import uk.co.auroraweb.nat5.util.AlertManager;
 import uk.co.auroraweb.nat5.util.DateUtils;
-import uk.co.auroraweb.nat5.util.JListModel;
+//import uk.co.auroraweb.nat5.util.JListModel;
 import uk.co.auroraweb.nat5.util.QRUtils;
 
 public class GuiProfile extends JDialog implements ActionListener {
@@ -39,7 +41,7 @@ public class GuiProfile extends JDialog implements ActionListener {
 	JLabel lblDOB = new JLabel();
 	JLabel lblDiscount = new JLabel();
 	
-	//Const labels
+	//Constant labels
 	JLabel lblSName = new JLabel("Name: ");
 	JLabel lblSAddress = new JLabel("Address: ");
 	JLabel lblSEmail = new JLabel("Email: ");
@@ -47,14 +49,15 @@ public class GuiProfile extends JDialog implements ActionListener {
 	JLabel lblEventsAttended = new JLabel("Events Attended:");
 	JLabel lblSDiscount = new JLabel("Discount:");
 	
+	//List to show the names of the events attended
 	JList<String> lstEventsAttended = new JList<String>();
 	
 	//Buttons
-	JButton btnQR = new JButton("Save QR Code...");
+	JButton btnSaveQR = new JButton("Save QR Code...");
 	JButton btnClose = new JButton("Close");
 	
 	//File chooser (to save QR)
-	JFileChooser flcQR = new JFileChooser();
+	JFileChooser flcSaveQR = new JFileChooser();
 	
 	public GuiProfile(JFrame frame,  Entry entry, int[] options) {		
 		super(frame, "Profile");
@@ -62,10 +65,10 @@ public class GuiProfile extends JDialog implements ActionListener {
 		parent = frame;
 		email = entry.getEmail();
 		
-		flcQR.setFileFilter(new FileNameExtensionFilter("Portable Network Graphics (PNG)", "png"));
+		flcSaveQR.setFileFilter(new FileNameExtensionFilter("Portable Network Graphics (PNG)", "png"));
 		
 		btnClose.addActionListener(this); 
-		btnQR.addActionListener(this);
+		btnSaveQR.addActionListener(this);
 		
 		//Set Name Label
 		lblName.setText("<HTML><B>" + entry.getFullName() + "</B></HTML>");
@@ -80,10 +83,10 @@ public class GuiProfile extends JDialog implements ActionListener {
 		lblDOB.setText(DateUtils.formatDate(entry.getDOB(), "dd/MM/yy") + " (" + entry.getAge() + " years old)");
 		
 		//Attended Events List
-		lstEventsAttended = new JList<String>(new JListModel<String>(entry.getAttendedEvents()));
+		lstEventsAttended.setModel(generateListModel(entry.getAttendedEvents()));
 		
 		//Set Discount
-		lblDiscount.setText(entry.getDiscount(options[2]) + "%");
+		lblDiscount.setText(entry.getDiscount(options[2], options[0]) + "%");
 		
 		panel.setLayout(new MigLayout("", "[fill, grow]", ""));
 		panel.add(lblQR, "wrap, span 2, align center");
@@ -106,7 +109,7 @@ public class GuiProfile extends JDialog implements ActionListener {
 		panel.add(lblSDiscount);
 		panel.add(lblDiscount, "wrap");
 		
-		panel.add(btnQR, "split 2, span 2, align right");
+		panel.add(btnSaveQR, "split 2, span 2, align right");
 		panel.add(btnClose);
 		
 		add(panel);
@@ -121,6 +124,9 @@ public class GuiProfile extends JDialog implements ActionListener {
 		
 	}
 	
+	/**
+	 * Updates the QR code
+	 */
 	private void updateQR() {
 		SwingUtilities.invokeLater(new Runnable(){
 
@@ -135,21 +141,36 @@ public class GuiProfile extends JDialog implements ActionListener {
 			
 		});
 	}
+	
+	/**
+	 * Generates a DefaultListModel<String> from a List<String>
+	 * @param events the list to be converted
+	 * @return the DefaultListModel
+	 */
+	private DefaultListModel<String> generateListModel(List<String> events) {
+		DefaultListModel<String> output = new DefaultListModel<String>();
+		
+		for (String event : events) {
+			output.addElement(event);
+		}
+		
+		return output;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+				
 		if (e.getSource() == btnClose) {
 			dispose();
 		}
 		
-		if (e.getSource() == btnQR) {
-			int returnVal = flcQR.showSaveDialog(this);
+		if (e.getSource() == btnSaveQR) {
+			int returnVal = flcSaveQR.showSaveDialog(this);
 			
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				try {
-					QRUtils.saveQR(email, new Dimension(150, 150), flcQR.getSelectedFile());
+					QRUtils.saveQR(email, new Dimension(150, 150), flcSaveQR.getSelectedFile());
 					AlertManager.alert(parent, AlertManager.INFO_MSG, "QR code saved successfuly!");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
